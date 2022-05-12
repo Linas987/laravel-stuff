@@ -16,6 +16,10 @@
                 <br>
                 Observations: {{$card->Observations}}
                 <br>
+                @if($card->file)
+                    <a href="download/{{$card->file}}" style="color: cadetblue"> Download Document </a>
+                @endif
+                <br>
             </div>
         @endif
         @endforeach

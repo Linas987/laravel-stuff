@@ -25,7 +25,10 @@ class User extends Authenticatable
         'email',
         'surname',
         'username',
-        'password'
+        'password',
+        'provider',
+        'provider_id',
+        'avatar'
     ];
     public function doctors()
     {

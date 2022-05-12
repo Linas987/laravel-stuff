@@ -19,6 +19,7 @@ class CreateCardTable extends Migration
             $table->unsignedBigInteger('doctor_id');
             $table->string('session_name',100);
             $table->string('Observations',1000);
+            $table->string('file')->nullable();
             $table->date('updated_at');
             $table->date('created_at');
 

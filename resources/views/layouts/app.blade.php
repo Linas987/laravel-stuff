@@ -13,12 +13,16 @@
   </head>
   <body>
     <div class="header-2">
+        @if (auth('web')->user())
+            <img src="/uploads/avatars/{{auth()->user()->avatar}}" style="width: 150px; height: 150px; float:left; border-radius:50%; margin-right: 0px">
+        @endif
       <h1>Hospital</h1>
 
       <!-- if the user is autentificateted will show logout button -->
         @if (auth('doctor')->user())
             <p class="h3"> Welcome {{ auth('doctor')->user()->name }} {{ auth('doctor')->user()->surname }} the {{ auth('doctor')->user()->occupation }} </p>
             <a href="{{ route('doctordashboard') }}" type="button" class="btn btn-primary btn-lg my-1">Home</a>
+            <a href="{{ route('PatientList') }}" type="button" class="btn btn-secondary btn-lg my-1">Patient list</a>
             <a href="{{ route('WriteCard') }}" type="button" class="btn btn-primary btn-lg my-1">Write card</a>
             <a href="{{ route('logout') }}" type="button" class="btn btn-danger btn-lg my-1">Log out</a>
         @elseif (auth()->user())
@@ -26,6 +30,7 @@
             @can('create doctor')
                 <p>U R ADMIN</p>
                 <a href="{{ route('MakeDoctor') }}" type="button" class="btn btn-warning btn-lg my-1">create doctor</a>
+                <a href="{{ route('EditDoctor') }}" type="button" class="btn btn-warning btn-lg my-1">Edit doctor</a>
             @endcan
             <a href="{{ route('dashboard') }}" type="button" class="btn btn-primary btn-lg my-1">Home</a>
             <a href="{{ route('DoctorList') }}" type="button" class="btn btn-success btn-lg my-1">register to a doctor</a>
@@ -35,7 +40,6 @@
             <a href="{{ route('login') }}" type="button" class="btn btn-primary btn-lg my-1">Log in</a>
             <a href="{{ route('register') }}" type="button" class="btn btn-secondary btn-lg my-1">Register</a>
         @endif
-
 
     </div>
     <div>

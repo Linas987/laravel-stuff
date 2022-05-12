@@ -7,9 +7,10 @@
     <div class="container content col-md-12">
         <div class="row">
 
-            <form class=" black_text" method="post" action="{{route('EditCard2',$id)}}">
+            <form class=" black_text" method="post" action="{{route('EditCard2',$id)}}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" value="PATCH"/>
+
                 <div class="mb-3">
                     <label for="user_id" class="form-label">Patient id</label>
                     <input class="form-control" type="number" id="user_id" name="user_id" value="{{$card->user_id}}">
@@ -20,8 +21,6 @@
                     </div>
                     @enderror
                 </div>
-
-
 
                 <div class="mb-3">
                     <label for="session_name" class="form-label">session name</label>
@@ -34,13 +33,21 @@
                     @enderror
                 </div>
 
-
-
                 <div class="mb-3">
                     <label class="form-label">Observations</label>
                     <textarea class="form-control" id="Observations" name="Observations" value="{{$card->Observations}}"></textarea>
 
                     @error('Observations')
+                    <div class="text-danger">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+
+                <div class="custom-file">
+                    <label>Update document</label>
+                    <input class="form-control-file" type="file" id="file" name="file">
+                    @error('file')
                     <div class="text-danger">
                         {{ $message }}
                     </div>

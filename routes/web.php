@@ -21,7 +21,15 @@ Route::get('/', function(){
 //------all_users
 Route::group(['middleware' => ['auth:web']], function () {
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard')->middleware('auth');
+    Route::delete('/dashboard',[DashboardController::class,'destroy']);
+    Route::get('/dashboard/{id}', [DashboardController::class,'edit'])->name('EditUser');
+    Route::patch('/dashboard/{id}',[DashboardController::class,'update'])->name('EditUser2');
+
     Route::post('/Date',[DateController::class,'store'])->name('Date');
+    Route::delete('/Date',[DateController::class,'destroy']);
+    Route::get('/Date/{id}', [DateController::class,'edit'])->name('EditDate');
+    Route::patch('/Date/{id}', [DateController::class,'update'])->name('EditDate2');
+
     Route::get('/DoctorList', [DoctorListController::class,'index'])->name('DoctorList');
     Route::post('/DoctorList', [DoctorListController::class,'store']);
     Route::get('/DoctorList/sort', [DoctorListController::class,'sort'])->name('DoctorSort');
@@ -40,8 +48,7 @@ Route::group(['middleware' => ['auth:doctor']], function () {
     Route::patch('/WriteCard/{id}',[CardController::class,'update'])->name('EditCard2');
     Route::delete('/WriteCard',[CardController::class,'destroy'])->name('DeleteCard');
 
-//    Route::get('/WriteCard', [CardController::class,'index2'])->name('WriteCard');
-//    Route::post('/WriteCard', [CardController::class,'store']);
+    Route::get('/PatientList', [PatientListController::class,'index'])->name('PatientList');
 });
 //-------------
 
@@ -49,6 +56,10 @@ Route::group(['middleware' => ['auth:doctor']], function () {
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/MakeDoctor', [MakeDoctorController::class, 'index'])->name('MakeDoctor');
     Route::post('/MakeDoctor', [MakeDoctorController::class, 'store']);
+    Route::get('/EditDoctor', [EditDoctorController::class, 'index'])->name('EditDoctor');
+    Route::delete('/EditDoctor', [EditDoctorController::class, 'destroy']);
+    Route::get('/EditDoctor/{id}', [EditDoctorController::class, 'edit'])->name('EditDoctor2');
+    Route::patch('/EditDoctor/{id}', [EditDoctorController::class, 'update'])->name('EditDoctor3');
 });
 //----------------
 
@@ -59,4 +70,9 @@ Route::get('/login', [LoginController::class,'index'])->name('login');
 Route::post('/login', [LoginController::class,'store']);
 Route::get('/register', [RegisterController::class,'index'])->name('register');
 Route::post('/register', [RegisterController::class,'store']);
+
+Route::get('download/{filename}', [CardController::class,'download']);
+
+Route::get('auth/{provider}',[LoginController::class,'redirectToProvider']);
+Route::get('auth/{provider}/callback',[LoginController::class,'handleProviderCallback']);
 //---------everyone

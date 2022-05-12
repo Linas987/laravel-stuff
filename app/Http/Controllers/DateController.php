@@ -34,4 +34,34 @@ class DateController extends Controller
         return redirect()->route('dashboard')->with($data);
         //return view('pages.DoctorList');
     }
+    public function destroy(Request $doctorUser)
+    {
+        //dd($doctorUser->drone);
+        DoctorUser::destroy($doctorUser->drone);
+
+        return back();
+    }
+    public function edit($id)
+    {
+        $DoctorUser=DoctorUser::find($id);
+        //dd($user->name);
+        $_SESSION['select_month']=0;
+        $doc_id=$DoctorUser->doctor_id;
+        $doctors = Doctor::all();
+        return view('pages.edit.appointment',['DoctorUser'=>$DoctorUser,'id'=>$id,'doc_id'=>$doc_id,'doctors'=>$doctors]);
+    }
+    public function update(Request $request,$id)
+    {
+        //dd("bruh");
+
+        $DoctorUser=DoctorUser::find($id);
+
+        //dd($DoctorUser->Times);
+        //dd($request->timereg);
+        $DoctorUser->date_register=$request->dateselected;
+        $DoctorUser->Times=$request->timereg;
+
+        $DoctorUser->save();
+        return redirect()->route('dashboard');
+    }
 }

@@ -45,6 +45,7 @@
             <button type="submit" class="btn btn-success" name="">Login</button>
           </div>
 
+              <a href="{{url('auth/google')}}" class="btn btn-primary">Use google login</a>
 
         </form>
       </div>

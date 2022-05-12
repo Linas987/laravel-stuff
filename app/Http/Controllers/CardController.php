@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use App\Models\DoctorUser;
+use App\Models\InvalidCard;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
@@ -22,6 +24,7 @@ class CardController extends Controller
     public function index2(Request $request)
     {
         $cards = Card::all();
+        $invalidCards=InvalidCard::all();
         //dd($request->userID);
         if($request->userID){
             $selectedUserId=$request->userID;
@@ -29,7 +32,7 @@ class CardController extends Controller
             $selectedUserId=null;
         }
 
-        return view('pages.WriteCard',['cards'=>$cards,'selectedUserId'=>$selectedUserId]);
+        return view('pages.WriteCard',['cards'=>$cards,'selectedUserId'=>$selectedUserId,'invalidCards'=>$invalidCards]);
     }
 
     public function store(Request $request)
@@ -39,23 +42,33 @@ class CardController extends Controller
             'session_name'=>'required',
             'body'=>'required'
         ]);
+        if($request->hasFile('file')){
+            $this->validate($request,['file'=>'file|mimes:pdf']);
+            //dd($request->file('file')->getSize());
+            $document =$request->file('file');
+            $filename = time() . '.' . $document->getClientOriginalExtension();
+            $document->move( public_path('/uploads/documents/'),$filename );
+            $uploadedfile=$filename;
+        }
+        if( isset($uploadedfile)) {
+            auth('doctor')->user()->cards()->create([
+                'user_id' => $request->user_id,
+                'session_name' => $request->session_name,
+                'Observations' => $request->body,
+                'file' => $uploadedfile
+            ]);
+        }else{
+            auth('doctor')->user()->cards()->create([
+                'user_id' => $request->user_id,
+                'session_name' => $request->session_name,
+                'Observations' => $request->body
+            ]);
+        }
 
-        /*Post::create([
-            'user_id'=>$request->user_id,
-            'doctor_id'=>auth('doctor')->id(),
-            'session_name'=>$request->session_name,
-            'Observations'=>$request->body,
-            'date_written'=>date("Y-m-d")
-        ]);*/
-
-        auth('doctor')->user()->cards()->create([
-            'user_id'=>$request->user_id,
-            'session_name'=>$request->session_name,
-            'Observations'=>$request->body,
-        ]);
         $cards = Card::get();
+        $invalidCards=InvalidCard::all();
 
-        return view('pages.WriteCard',['cards'=>$cards]);
+        return view('pages.WriteCard',['cards'=>$cards,'invalidCards'=>$invalidCards]);
     }
     public function destroy(Request $request)
     {
@@ -77,11 +90,33 @@ class CardController extends Controller
             'session_name'=>'required',
             'Observations'=>'required'
         ]);
+        if($request->hasFile('file')){
+            $this->validate($request,['file'=>'file|mimes:pdf']);
+            //dd($request->file('avatar')->getSize());
+            $document =$request->file('file');
+            $filename = time() . '.' . $document->getClientOriginalExtension();
+            $document->move( public_path('/uploads/documents/'),$filename );
+            $card=Card::find($id);
+            $card->file=$filename;
+            $card->save();
+        }
         $card=Card::find($id);
         $card->user_id=$request->get('user_id');
         $card->session_name=$request->get('session_name');
         $card->Observations=$request->get('Observations');
         $card->save();
         return redirect()->route('WriteCard')->with('success','Card updated');
+    }
+    public function download(Request $request,$filename)
+    {
+        $file = public_path('/uploads/documents/').$filename;
+
+        $headers = ['Content-Type: pdf'];
+
+        if (file_exists($file)) {
+            return response()->download($file, 'Card.pdf', $headers);
+        } else {
+            echo('File not found.');
+        }
     }
 }
